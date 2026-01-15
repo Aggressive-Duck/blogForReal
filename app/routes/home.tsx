@@ -3,11 +3,18 @@ import { Welcome } from "../welcome/welcome";
 
 export function meta({}: Route.MetaArgs) {
   return [
-    { title: "New React Router App" },
-    { name: "description", content: "Welcome to React Router!" },
+    { title: "Riso Wagara Card" },
+    { name: "description", content: "A Riso-style Japanese pattern card" },
   ];
 }
 
 export default function Home() {
-  return <Welcome />;
+  return (
+    <main className="riso-container">
+      <div className="pattern-box"></div>
+      <div className="relative z-10 w-full">
+        <Welcome />
+      </div>
+    </main>
+  );
 }
