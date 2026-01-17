@@ -5,78 +5,246 @@
     "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
 }
 
-html,
-body {
-  @apply bg-white dark:bg-gray-950;
-
-  @media (prefers-color-scheme: dark) {
-    color-scheme: dark;
-  }
-}
+/* ============================================
+   RISO + HOLOGRAPHIC PATTERN SYSTEM
+   ============================================ */
 
 :root {
   /* Riso Palette */
   --riso-paper: #F6F4E8;
-  --riso-blue: #0078BF;
-  --riso-pink: #FF48B0; 
+  --riso-navy: #2C3E50;
 
-  /* New Pattern Variables */
-  --size: 60px;       /* Tile Size */
-  --angle: 45deg;     /* Rotation of the pattern */
-  --c1: #0078BF;      /* Blue */
-  --c2: #00A95C;      /* Green */
-  --bg: #F2F2F2;      /* Background */
+  /* Pattern Variables */
+  --size: 60px;
+  --angle: 45deg;
+  --c1: #0078BF;    /* Blue */
+  --c2: #00A95C;    /* Green */
+  --bg: #F2F2F2;
+  
+  /* 3D Transform (controlled by JS) */
+  --rotate-x: 0deg;
+  --rotate-y: 0deg;
+  --mouse-x: 50%;
+  --mouse-y: 50%;
 }
 
-.riso-container {
-  background-color: var(--riso-paper);
+
+
+html, body {
   margin: 0;
+  padding: 0;
   min-height: 100vh;
+  background: linear-gradient(135deg, #ddd, #bbb);
+}
+
+/* ============================================
+   MAIN CONTAINER - 3D PERSPECTIVE
+   ============================================ */
+.riso-container {
+  position: relative;
+  width: 100%;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  perspective: 1000px;
+  overflow: hidden;
+}
+
+/* ============================================
+   THE FOIL CARD - 3D TRANSFORMS
+   ============================================ */
+.foil-card {
+  position: relative;
+  width: 90vw;
+  max-width: 600px;
+  height: 80vh;
+  max-height: 800px;
+  border-radius: 20px;
+  overflow: hidden;
+  
+  /* 3D Transform - controlled by mouse */
+  transform-style: preserve-3d;
+  transform: 
+    rotateX(var(--rotate-x)) 
+    rotateY(var(--rotate-y));
+  
+  /* Smooth transition */
+  transition: transform 0.1s ease-out;
+  
+  /* Card shadow */
+  box-shadow: 
+    0 25px 50px -12px rgba(0, 0, 0, 0.4),
+    0 0 0 1px rgba(255, 255, 255, 0.1);
+}
+
+/* ============================================
+   LAYER 1: CONIC GRADIENT TRIANGLE PATTERN
+   ============================================
+   Two opposite direction triangles pattern
+   using conic gradients
+   ============================================ */
+.pattern-layer {
+  position: absolute;
+  inset: 0;
+  background-color: var(--bg);
+  
+  /* Multi-layer background:
+     1. Riso noise texture (for risograph feel)
+     2. Conic gradient pattern (the triangles)
+  */
+  background-image: 
+    /* Layer 1: Riso noise texture */
+    url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzMDAiIGhlaWdodD0iMzAwIj48ZmlsdGVyIGlkPSJub2lzZSI+PGZlVHVyYmVsZW5jZSB0eXBlPSJmcmFjdGFsTm9pc2UiIGJhc2VGcmVxdWVuY3k9IjAuNjUiIG51bU9jdGF2ZXM9IjMiIHN0aXRjaFRpbGVzPSJzdGl0Y2giLz48L2ZpbHRlcj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWx0ZXI9InVybCgjbm9pc2UpIiBvcGFjaXR5PSIwLjQiLz48L3N2Zz4='),
+    /* Layer 2: Conic Gradient - Opposite Triangles */
+    conic-gradient(
+      from var(--angle), 
+      var(--c1) 0deg 90deg, 
+      var(--bg) 90deg 180deg, 
+      var(--c2) 180deg 270deg, 
+      var(--bg) 270deg 360deg
+    );
+  
+  background-size: 
+    300px 300px,            /* Noise texture */
+    var(--size) var(--size); /* Pattern tiles */
+  
+  background-blend-mode: 
+    overlay,    /* Noise blends as overlay */
+    normal;     /* Pattern is the base */
+}
+
+/* ============================================
+   LAYER 2: RISO TEXTURE (with isolation)
+   ============================================ */
+.riso-texture {
+  isolation: isolate;
+  position: absolute;
+  inset: 0;
+  
+  background: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzMDAiIGhlaWdodD0iMzAwIj48ZmlsdGVyIGlkPSJub2lzZSI+PGZlVHVyYnVsZW5jZSB0eXBlPSJmcmFjdGFsTm9pc2UiIGJhc2VGcmVxdWVuY3k9IjAuNjUiIG51bU9jdGF2ZXM9IjMiIHN0aXRjaFRpbGVzPSJzdGl0Y2giLz48L2ZpbHRlcj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWx0ZXI9InVybCgjbm9pc2UpIiBvcGFjaXR5PSIwLjQiLz48L3N2Zz4=');
+  
+  mix-blend-mode: overlay;
+  pointer-events: none;
+  opacity: 0.4;
+}
+
+/* ============================================
+   LAYER 3: HOLOGRAPHIC SHIMMER
+   ============================================
+   Pokemon card style rainbow shimmer that 
+   responds to mouse movement
+   ============================================ */
+.holographic-shine {
+  isolation: isolate;
+  position: absolute;
+  inset: 0;
+  
+  /* Multi-layer holographic effect:
+     1. Moving rainbow gradient (responds to mouse)
+     2. Fine sparkle texture  
+  */
+  background-image: 
+    /* Layer 1: Rainbow spectrum - follows mouse */
+    repeating-linear-gradient(
+      0deg,
+      rgb(255, 0, 0) 0%,
+      rgb(255, 154, 0) 10%,
+      rgb(208, 222, 33) 20%,
+      rgb(79, 220, 74) 30%,
+      rgb(63, 218, 216) 40%,
+      rgb(28, 127, 238) 50%,
+      rgb(95, 21, 242) 60%,
+      rgb(186, 12, 248) 70%,
+      rgb(255, 0, 0) 80%
+    ),
+    /* Layer 2: Perpendicular rainbow for iridescence */
+    repeating-linear-gradient(
+      133deg,
+      rgba(255, 0, 0, 0.8) 0%,
+      rgba(255, 154, 0, 0.8) 12%,
+      rgba(208, 222, 33, 0.8) 25%,
+      rgba(79, 220, 74, 0.8) 37%,
+      rgba(63, 218, 216, 0.8) 50%,
+      rgba(28, 127, 238, 0.8) 62%,
+      rgba(95, 21, 242, 0.8) 75%,
+      rgba(186, 12, 248, 0.8) 87%,
+      rgba(255, 0, 0, 0.8) 100%
+    );
+  
+  /* Both gradients move with mouse */
+  background-size: 400% 400%;
+  background-position: 
+    var(--mouse-x) var(--mouse-y),
+    var(--mouse-y) var(--mouse-x);
+  
+  /* Pokemon card style: Only show shimmer on the colored triangles */
+  -webkit-mask-image: conic-gradient(
+    from var(--angle), 
+    black 0deg 90deg, 
+    transparent 90deg 180deg, 
+    black 180deg 270deg, 
+    transparent 270deg 360deg
+  );
+  mask-image: conic-gradient(
+    from var(--angle), 
+    black 0deg 90deg, 
+    transparent 90deg 180deg, 
+    black 180deg 270deg, 
+    transparent 270deg 360deg
+  );
+  -webkit-mask-size: var(--size) var(--size);
+  mask-size: var(--size) var(--size);
+  
+  /* IMPORTANT: soft-light blend shows rainbow colors better */
+  mix-blend-mode: soft-light;
+  pointer-events: none;
+  
+  /* High visibility */
+  filter: brightness(100%) saturate(150%);
+  opacity: 0.9;
+}
+
+/* ============================================
+   MULTIPLY OVERLAY
+   ============================================ */
+.multiply-overlay {
+  position: absolute;
+  inset: 0;
+  background: antiquewhite;
+  mix-blend-mode: multiply;
+  pointer-events: none;
+  opacity: 0.3;
+}
+
+/* ============================================
+   CONTENT LAYER
+   ============================================ */
+.content-layer {
+  position: relative;
+  z-index: 10;
+  width: 100%;
+  height: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: flex-start;
-  overflow-y: auto;
-  position: relative;
-}
-
-.pattern-box {
-  width: 100%;
-  height: 40vh;
-  background-color: var(--bg);
-  position: absolute;
-  top: 0;
-  left: 0;
-  
-  /* THE INVENTION ENGINE: Conic Gradients */
-  background-image: conic-gradient(
-    from var(--angle), 
-    var(--c1) 0deg 90deg, 
-    var(--bg) 90deg 180deg, 
-    var(--c2) 180deg 270deg, 
-    var(--bg) 270deg 360deg
-  );
-  
-  background-size: var(--size) var(--size);
-  
-  /* Fade away at its tail */
-  mask-image: linear-gradient(to bottom, black 20%, transparent 100%);
-  -webkit-mask-image: linear-gradient(to bottom, black 20%, transparent 100%);
-}
-
-/* Riso Texture Effect */
-.pattern-box::after {
-  content: "Riso Filter";
-  display: flex;
   justify-content: center;
-  align-items: center;
-  font-family: sans-serif;
-  color: white;
-  font-weight: bold;
-  font-size: 1.5rem;
-  position: absolute;
-  inset: 0;
-  background: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyMDAiIGhlaWdodD0iMjAwIj48ZmlsdGVyIGlkPSJkb2RneSI+PGZlVHVyYnVsZW5jZSB0eXBlPSJmcmFjdGFsTm9pc2UiIGJhc2VGcmVxdWVuY3k9IjAuOCIvPjwvZmlsdGVyPjxyZWN0IHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIGZpbHRlcj0idXJsKCNkb2RneSkiIG9wYWNpdHk9IjAuNCIvPjwvc3ZnPg==');
-  mix-blend-mode: overlay;
-  pointer-events: none;
+  padding: 2rem;
+}
+
+.site-title {
+  font-size: clamp(2rem, 6vw, 4rem);
+  font-weight: 800;
+  color: var(--riso-navy);
+  text-align: center;
+  text-shadow: 
+    2px 2px 0 var(--riso-paper),
+    4px 4px 0 rgba(0, 0, 0, 0.1);
+}
+
+.site-subtitle {
+  font-size: clamp(0.9rem, 2vw, 1.2rem);
+  color: var(--riso-navy);
+  opacity: 0.6;
+  margin-top: 1rem;
 }
