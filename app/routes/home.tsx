@@ -1,5 +1,4 @@
 import type { Route } from "./+types/home";
-import { Welcome } from "../welcome/welcome";
 
 export function meta({}: Route.MetaArgs) {
   return [
@@ -13,7 +12,6 @@ export default function Home() {
     <main className="riso-container">
       <div className="pattern-box"></div>
       <div className="relative z-10 w-full">
-        <Welcome />
       </div>
     </main>
   );

@@ -25,7 +25,7 @@ body {
   --angle: 45deg;     /* Rotation of the pattern */
   --c1: #0078BF;      /* Blue */
   --c2: #00A95C;      /* Green */
-  --bg: #F2F2F2;      /* Background */
+  --bg: #F6F4E8;      /* Background */
 }
 
 .riso-container {
@@ -42,7 +42,7 @@ body {
 
 .pattern-box {
   width: 100%;
-  height: 40vh;
+  height: 100vh;
   background-color: var(--bg);
   position: absolute;
   top: 0;
@@ -60,20 +60,13 @@ body {
   background-size: var(--size) var(--size);
   
   /* Fade away at its tail */
-  mask-image: linear-gradient(to bottom, black 20%, transparent 100%);
-  -webkit-mask-image: linear-gradient(to bottom, black 20%, transparent 100%);
+  mask-image: linear-gradient(to bottom, black 40%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to bottom, black 40%  , transparent 100%);
 }
 
-/* Riso Texture Effect */
+/* Riso Texture Effect - adds grainy noise overlay for risograph look */
 .pattern-box::after {
-  content: "Riso Filter";
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  font-family: sans-serif;
-  color: white;
-  font-weight: bold;
-  font-size: 1.5rem;
+  content: "";  /* Empty string required for ::after to render */
   position: absolute;
   inset: 0;
   background: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyMDAiIGhlaWdodD0iMjAwIj48ZmlsdGVyIGlkPSJkb2RneSI+PGZlVHVyYnVsZW5jZSB0eXBlPSJmcmFjdGFsTm9pc2UiIGJhc2VGcmVxdWVuY3k9IjAuOCIvPjwvZmlsdGVyPjxyZWN0IHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIGZpbHRlcj0idXJsKCNkb2RneSkiIG9wYWNpdHk9IjAuNCIvPjwvc3ZnPg==');
